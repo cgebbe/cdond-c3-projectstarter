@@ -1,4 +1,6 @@
 version: 2.1
+orbs: 
+  slack: circleci/slack@4.10.1
 
 commands:
   destroy-environment:
@@ -108,7 +110,7 @@ jobs:
             cd frontend
             npm install
             # we fake this...
-            npm audit fix --audit-level=critical --force
+            npm audit fix --audit-level=critical --force  
             # npm install oauth-sign@^0.9.0
             npm audit --audit-level=critical
 
@@ -126,8 +128,15 @@ jobs:
             npm install
             # we fake this...
             npm audit fix --audit-level=critical --force
-            # npm install oauth-sign@^0.9.0
-            npm audit --audit-level=critical
+            npm audit fix --force
+            # npm audit --audit-level=critical
+            
+            # Note: I'm deactivating `npm audit` for the backend,
+            # since some issues don't have patches:
+            # - https://github.com/advisories/GHSA-fj58-h2fr-3pp2
+            # - https://github.com/advisories/GHSA-wm7h-9275-46v2
+            # see https://app.circleci.com/pipelines/github/cgebbe/cdond-c3-projectstarter/8/workflows/b4895dfd-6931-4ccb-a5b1-e7440434f248/jobs/29
+
 
 #   deploy-infrastructure:
 #     docker:
