@@ -194,6 +194,7 @@ jobs:
             ls -lah
             cd .circleci/ansible
 
+            echo "[web]" > inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> inventory.txt
@@ -203,26 +204,31 @@ jobs:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-      # Here's where you will add some code to rollback on failure
 
-#   configure-infrastructure:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # Your code here
-#             exit 1
-#       - run:
-#           name: Configure server
-#           command: |
-#             # Your code here
-#             exit 1
-#       # Here's where you will add some code to rollback on failure
+  configure-infrastructure:
+    docker:
+      - image: gebbissimo/ansible:20220802_v2
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            # udacity
+            - "a4:51:16:42:f3:05:de:b7:13:c5:9c:c9:ed:fd:b3:03"
+            # udapeople
+            # - "76:63:36:fc:4b:ba:32:6e:a0:62:ea:b5:d2:4d:f0:49"
+      - attach_workspace:
+          at: ~/
+      - run:
+          # already installed most stuff in custom docker image
+          name: Install dependencies
+          command: |
+            ansible-galaxy collection install community.general
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook configure-server.yml -i inventory.txt
+      # Here's where you will add some code to rollback on failure
 
 #   run-migrations:
 #     docker:
@@ -352,12 +358,12 @@ workflows:
       # - scan-frontend:
       #     requires: [build-frontend]
       - deploy-infrastructure
-        # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-        # filters:
-        #   branches:
-        #     only: [test-feature-branch]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
+      # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      # filters:
+      #   branches:
+      #     only: [test-feature-branch]
+      - configure-infrastructure
+          requires: [deploy-infrastructure]
       # - run-migrations:
       #     requires: [configure-infrastructure]
       # - deploy-frontend:
