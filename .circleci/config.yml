@@ -167,7 +167,8 @@ commands:
 jobs:
   deploy-infrastructure:
     docker:
-      - image: amazon/aws-cli
+      - image: cimg/aws:2022.06
+      # - image: amazon/aws-cli  # does not have `tar` which is required by `persist_to_workspace`.
     steps:
       - checkout
       - run:
