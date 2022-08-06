@@ -1,5 +1,5 @@
 ---
-- name: "set environment variables":
+- name: "set environment variables"
   ansible.builtin.shell: |
     echo "# Custom environment variables" >> ~/.profile
     echo "export TYPEORM_CONNECTION=${TYPEORM_CONNECTION}" >> ~/.profile
