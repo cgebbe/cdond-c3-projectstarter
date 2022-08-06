@@ -1,18 +1,18 @@
 ---
 - name: "set environment variables"
   ansible.builtin.shell: |
-    echo "# Custom environment variables" >> ~/.profile
+    echo "# Custom environment variables" >> /home/ubuntu/.profile
 
-    echo "export TYPEORM_CONNECTION=${TYPEORM_CONNECTION}" >> ~/.profile
-    echo "export TYPEORM_ENTITIES=${TYPEORM_ENTITIES}" >> ~/.profile
-    echo "export TYPEORM_HOST=${TYPEORM_HOST}" >> ~/.profile
-    echo "export TYPEORM_PORT=${TYPEORM_PORT}" >> ~/.profile
+    echo "export TYPEORM_CONNECTION=${TYPEORM_CONNECTION}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_ENTITIES=${TYPEORM_ENTITIES}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_HOST=${TYPEORM_HOST}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_PORT=${TYPEORM_PORT}" >> /home/ubuntu/.profile
 
-    echo "export TYPEORM_USERNAME=${TYPEORM_USERNAME}" >> ~/.profile
-    echo "export TYPEORM_PASSWORD=${TYPEORM_PASSWORD}" >> ~/.profile
-    echo "export TYPEORM_DATABASE=${TYPEORM_DATABASE}" >> ~/.profile
-    echo "export TYPEORM_MIGRATIONS=${TYPEORM_MIGRATIONS}" >> ~/.profile
-    echo "export TYPEORM_MIGRATIONS_DIR=${TYPEORM_MIGRATIONS_DIR}" >> ~/.profile
+    echo "export TYPEORM_USERNAME=${TYPEORM_USERNAME}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_PASSWORD=${TYPEORM_PASSWORD}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_DATABASE=${TYPEORM_DATABASE}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_MIGRATIONS=${TYPEORM_MIGRATIONS}" >> /home/ubuntu/.profile
+    echo "export TYPEORM_MIGRATIONS_DIR=${TYPEORM_MIGRATIONS_DIR}" >> /home/ubuntu/.profile
 
 - name: "upgrade packages."
   become: true
