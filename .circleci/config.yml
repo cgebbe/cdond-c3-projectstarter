@@ -291,24 +291,41 @@ jobs:
             # FIXME: Use new infrastructure
             # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws s3 cp dist s3://udapeople-17904c9 --recursive
-  # Here's where you will add some code to rollback on failure
+      # Here's where you will add some code to rollback on failure
 
-#   deploy-backend:
-#     docker:
-#       # Docker image here that supports Ansible
-#     steps:
-#       # Checkout code from git
-#       # Add ssh keys with fingerprint
-#       # attach workspace
-#       - run:
-#           name: Install dependencies
-#           command: |
-#             # your code here
-#       - run:
-#           name: Deploy backend
-#           command: |
-#             # your code here
-#       # Here's where you will add some code to rollback on failure
+  deploy-backend:
+    docker:
+      - image: gebbissimo/node_with_aws:20220806_v2
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            # udacity
+            - "a4:51:16:42:f3:05:de:b7:13:c5:9c:c9:ed:fd:b3:03"
+            # udapeople
+            # - "76:63:36:fc:4b:ba:32:6e:a0:62:ea:b5:d2:4d:f0:49"
+      - attach_workspace:
+          # necessary for inventory.txt
+          at: ~/
+      # - run:
+      #     name: Install dependencies
+      #     command: |
+      #       # your code here
+      - run:
+          name: Deploy backend
+          command: |
+            cd backend
+            npm i
+            npm run build
+            cd ..
+            # Zip the directory
+            tar -C backend -czvf artifact.tar.gz .
+            # mv artifact.tar.gz .circleci/ansible/
+            cd .circleci/ansible
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      # Here's where you will add some code to rollback on failure
 
 #   smoke-test:
 #     docker:
@@ -372,6 +389,7 @@ workflows:
     jobs:
       # - notify:
       #     context: slack-secrets
+
       - build-frontend
       # - build-backend
       # - test-frontend:
@@ -382,6 +400,7 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
+
       # - deploy-infrastructure
       # requires: [build-frontend, build-backend]
       # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
@@ -390,14 +409,17 @@ workflows:
       #     only: [test-feature-branch]
       # - configure-infrastructure:
       #     requires: [deploy-infrastructure]
+
       # - run-migrations:
       #     requires: [build-backend]
       #     requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [build-frontend]
+      # - deploy-frontend:
+      #     requires: [build-frontend]
       #     requires: [run-migrations]
-      # - deploy-backend:
-      #     requires: [run-migrations]
+      - deploy-backend:
+          requires: [build-backend]
+          # requires: [run-migrations]
+
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
