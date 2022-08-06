@@ -1,6 +1,8 @@
 ---
 - name: "set environment variables"
   ansible.builtin.shell: |
+    cat ~/.profile
+
     echo "# Custom environment variables" >> ~/.profile
     echo "export TYPEORM_CONNECTION=${TYPEORM_CONNECTION}" >> ~/.profile
     echo "export TYPEORM_ENTITIES=${TYPEORM_ENTITIES}" >> ~/.profile
@@ -13,6 +15,7 @@
     echo "export TYPEORM_MIGRATIONS=${TYPEORM_MIGRATIONS}" >> ~/.profile
     echo "export TYPEORM_MIGRATIONS_DIR=${TYPEORM_MIGRATIONS_DIR}" >> ~/.profile
 
+    cat ~/.profile
     # source ~/.profile
 
 # - name: "upgrade packages."
