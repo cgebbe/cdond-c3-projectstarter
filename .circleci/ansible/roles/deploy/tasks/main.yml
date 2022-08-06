@@ -10,7 +10,7 @@
 
 - name: "create dir for backend"
   ansible.builtin.shell: |
-    mkdir ~/backend
+    mkdir -p ~/backend
 
 - name: "copy and unpack archive"
   ansible.builtin.unarchive:
