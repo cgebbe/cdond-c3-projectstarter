@@ -288,7 +288,7 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            # FIXME: Use new infrastructure
+            #   : Use new infrastructure
             # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws s3 cp dist s3://udapeople-17904c9 --recursive
       # Here's where you will add some code to rollback on failure
@@ -407,8 +407,8 @@ workflows:
       # - notify:
       #     context: slack-secrets
 
-      - build-frontend
-      - build-backend
+      # - build-frontend
+      # - build-backend
       # - test-frontend:
       #     requires: [build-frontend]
       # - test-backend:
@@ -417,9 +417,8 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-
-      - deploy-infrastructure:
-          requires: [build-frontend, build-backend]
+      - deploy-infrastructure
+        # requires: [build-frontend, build-backend]
       # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       # filters:
       #   branches:
@@ -430,14 +429,14 @@ workflows:
       # - run-migrations:
       #     requires: [build-backend]
       #     requires: [configure-infrastructure]
-      - deploy-frontend:
-          requires: [configure-infrastructure]
-          # requires: [run-migrations]
-      - deploy-backend:
-          requires: [configure-infrastructure]
+      # - deploy-frontend:
+      #     requires: [configure-infrastructure, build-frontend]
       # requires: [run-migrations]
-      - smoke-test:
-          requires: [deploy-backend, deploy-frontend]
+      # - deploy-backend:
+      #     requires: [configure-infrastructure, build-backend]
+      # requires: [run-migrations]
+      # - smoke-test:
+      #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:
       #     requires: [smoke-test]
       # - cleanup:
