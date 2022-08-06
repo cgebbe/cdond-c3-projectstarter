@@ -219,7 +219,7 @@ jobs:
           at: ~/
       - run:
           # already installed most stuff in custom docker image
-          name: Install dependencies
+          name: Install ansible dependencies
           command: |
             ansible-galaxy collection install community.general
       - run:
@@ -227,8 +227,8 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook configure-server.yml -i inventory.txt
-      - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      # - destroy-environment:
+      #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   run-migrations:
     docker:
@@ -417,14 +417,14 @@ workflows:
       #     requires: [build-backend]
       # - scan-frontend:
       #     requires: [build-frontend]
-      - deploy-infrastructure
-        # requires: [build-frontend, build-backend]
+      # - deploy-infrastructure
+      # requires: [build-frontend, build-backend]
       # requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       # filters:
       #   branches:
       #     only: [test-feature-branch]
-      - configure-infrastructure:
-          requires: [deploy-infrastructure]
+      - configure-infrastructure
+        # requires: [deploy-infrastructure]
 
       # - run-migrations:
       #     requires: [build-backend]
