@@ -35,7 +35,7 @@ commands:
               exit 1
             fi
 
-# jobs:
+jobs:
 # notify:
 #   docker:
 #     - image: 'cimg/base:stable'
@@ -60,111 +60,110 @@ commands:
 
 ### BUILD AND CHECK
 
-# build-frontend:
-#   docker:
-#     - image: circleci/node:13.8.0
-#   steps:
-#     - checkout
-#     - restore_cache:
-#         keys: [frontend-build]
-#     - run:
-#         name: Build front-end
-#         command: |
-#           cd frontend
-#           npm install
-#           npm run build
-#     - save_cache:
-#         paths: [frontend/node_modules]
-#         key: frontend-build
+build-frontend:
+  docker:
+    - image: circleci/node:13.8.0
+  steps:
+    - checkout
+    - restore_cache:
+        keys: [frontend-build]
+    - run:
+        name: Build front-end
+        command: |
+          cd frontend
+          npm install
+          npm run build
+    - save_cache:
+        paths: [frontend/node_modules]
+        key: frontend-build
 
-# build-backend:
-#   docker:
-#     - image: circleci/node:13.8.0
-#   steps:
-#     - checkout
-#     - restore_cache:
-#         keys: [backend-build]
-#     - run:
-#         name: Back-end build
-#         command: |
-#           cd backend
-#           npm install
-#           npm run build
-#     - save_cache:
-#         paths: [backend/node_modules]
-#         key: backend-build
+build-backend:
+  docker:
+    - image: circleci/node:13.8.0
+  steps:
+    - checkout
+    - restore_cache:
+        keys: [backend-build]
+    - run:
+        name: Back-end build
+        command: |
+          cd backend
+          npm install
+          npm run build
+    - save_cache:
+        paths: [backend/node_modules]
+        key: backend-build
 
-# test-frontend:
-#   docker:
-#     - image: circleci/node:13.8.0
-#   steps:
-#     - checkout
-#     - restore_cache:
-#         keys: [frontend-build]
-#     - run:
-#         name: test frontend
-#         command: |
-#           cd frontend
-#           npm install
-#           npm run test
+  # test-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: test frontend
+  #         command: |
+  #           cd frontend
+  #           npm install
+  #           npm run test
 
-# test-backend:
-#   docker:
-#     - image: circleci/node:13.8.0
-#   steps:
-#     - checkout
-#     - restore_cache:
-#         keys: [backend-build]
-#     - run:
-#         name: test backend
-#         command: |
-#           cd backend
-#           npm install
-#           npm run test
+  # test-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: test backend
+  #         command: |
+  #           cd backend
+  #           npm install
+  #           npm run test
 
-# scan-frontend:
-#   docker:
-#     - image: circleci/node:13.8.0
-#   steps:
-#     - checkout
-#     - restore_cache:
-#         keys: [frontend-build]
-#     - run:
-#         name: test frontend
-#         command: |
-#           cd frontend
-#           npm install
-#           # we fake this...
-#           npm audit fix --audit-level=critical --force
-#           # npm install oauth-sign@^0.9.0
-#           npm audit --audit-level=critical
+  # scan-frontend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [frontend-build]
+  #     - run:
+  #         name: test frontend
+  #         command: |
+  #           cd frontend
+  #           npm install
+  #           # we fake this...
+  #           npm audit fix --audit-level=critical --force
+  #           # npm install oauth-sign@^0.9.0
+  #           npm audit --audit-level=critical
 
-# scan-backend:
-#   docker:
-#     - image: circleci/node:13.8.0
-#   steps:
-#     - checkout
-#     - restore_cache:
-#         keys: [backend-build]
-#     - run:
-#         name: test backend
-#         command: |
-#           cd backend
-#           npm install
-#           # we fake this...
-#           npm audit fix --audit-level=critical --force
-#           npm audit fix --force
-#           # npm audit --audit-level=critical
+  # scan-backend:
+  #   docker:
+  #     - image: circleci/node:13.8.0
+  #   steps:
+  #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
+  #     - run:
+  #         name: test backend
+  #         command: |
+  #           cd backend
+  #           npm install
+  #           # we fake this...
+  #           npm audit fix --audit-level=critical --force
+  #           npm audit fix --force
+  #           # npm audit --audit-level=critical
 
-#           # Note: I'm deactivating `npm audit` for the backend,
-#           # since some issues don't have patches:
-#           # - https://github.com/advisories/GHSA-fj58-h2fr-3pp2
-#           # - https://github.com/advisories/GHSA-wm7h-9275-46v2
-#           # see https://app.circleci.com/pipelines/github/cgebbe/cdond-c3-projectstarter/8/workflows/b4895dfd-6931-4ccb-a5b1-e7440434f248/jobs/29
+  #           # Note: I'm deactivating `npm audit` for the backend,
+  #           # since some issues don't have patches:
+  #           # - https://github.com/advisories/GHSA-fj58-h2fr-3pp2
+  #           # - https://github.com/advisories/GHSA-wm7h-9275-46v2
+  #           # see https://app.circleci.com/pipelines/github/cgebbe/cdond-c3-projectstarter/8/workflows/b4895dfd-6931-4ccb-a5b1-e7440434f248/jobs/29
 
-### DEPLOY INFRASTRUCTURE
+  ### DEPLOY INFRASTRUCTURE
 
-jobs:
   deploy-infrastructure:
     docker:
       - image: cimg/aws:2022.06
@@ -228,11 +227,12 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook configure-server.yml -i inventory.txt
-      # Here's where you will add some code to rollback on failure
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   run-migrations:
     docker:
-      - image: gebbissimo/node_with_aws:20220806
+      - image: gebbissimo/node_with_aws:20220806_v2
     steps:
       - checkout
       - run:
@@ -254,14 +254,17 @@ jobs:
                 # curl -H "Content-Type: text/plain" -H "token: 7933fe63-4687-4fa1-8426-aa25aa1730ec" --request PUT --data "1" https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID:0:7}
                 # If you are using kvdb.io, generate the bucket ID "9GE4jRtKznmVKRfvdBABBe" in your local terminal first
                 # curl https://kvdb.io/9GE4jRtKznmVKRfvdBABBe/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
-            fi
-  #      # Here's where you will add some code to rollback on failure
+            fi  s
+      - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   # deploy-frontend:
   #   docker:
-  #     - image: cimg/aws:2022.06
+  #     - image: gebbissimo/node_with_aws:20220806_v2
   #   steps:
   #     - checkout
+  #     - restore_cache:
+  #         keys: [backend-build]
   #     - run:
   #         name: Install dependencies
   #         command: |
