@@ -235,6 +235,8 @@ jobs:
       - image: gebbissimo/node_with_aws:20220806_v2
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build]
       - run:
           name: Run migrations
           command: |
@@ -263,8 +265,8 @@ jobs:
   #     - image: gebbissimo/node_with_aws:20220806_v2
   #   steps:
   #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-build]
+  #     - attach_workspace:
+  #         at: ~/
   #     - run:
   #         name: Install dependencies
   #         command: |
