@@ -334,18 +334,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Backend smoke test.
-          command: |
-            source .env
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "${API_URL}"
-            if curl "${API_URL}/api/status" | grep "ok"
-            then
-                exit 0
-            else
-                exit 1
-            fi
-      - run:
           name: Frontend smoke test.
           command: |
             # FIXME: use new S3 test
@@ -357,6 +345,18 @@ jobs:
               exit 0
             else
               exit 1
+            fi
+      - run:
+          name: Backend smoke test.
+          command: |
+            source .env
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
+            then
+                exit 0
+            else
+                exit 1
             fi
       # - destroy-environment:
       #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
