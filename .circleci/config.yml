@@ -167,7 +167,7 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/aws:2022.06
+      - image: gebbissimo/node_with_aws:20220806_v2
       # - image: amazon/aws-cli  # does not have `tar` which is required by `persist_to_workspace`.
     steps:
       - checkout
@@ -190,24 +190,23 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            pwd
-            ls -lah
-            cd .circleci/ansible
+            # The stack has only one output, namely the IP-address of the EC2 instance.
+            BACKEND_IP=$(aws cloudformation describe-stacks --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7} --output=json | jq -r '.Stacks | .[0] | .Outputs | .[0] | .OutputValue')
+            echo $BACKEND_IP
 
-            echo "[web]" > inventory.txt
-            aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --output text >> inventory.txt
+            echo "export BACKEND_IP=${BACKEND_IP}" >> .env
+            echo "[web]\n${BACKEND_IP}" > .circleci/ansible/inventory.txt
       - persist_to_workspace:
           root: ~/
           paths:
+            - project/.env
             - project/.circleci/ansible/inventory.txt
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   configure-infrastructure:
     docker:
-      - image: gebbissimo/ansible:20220802_v2
+      - image: gebbissimo/node_with_aws:20220806_v2
     steps:
       - checkout
       - add_ssh_keys:
@@ -270,16 +269,10 @@ jobs:
       - attach_workspace:
           # is this really necessary?
           at: ~/
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
-            export API_URL="http://${BACKEND_IP}:3030"
-            echo "API_URL = ${API_URL}"
+            source .env 
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
             cat frontend/.env
       - run:
@@ -289,9 +282,9 @@ jobs:
             npm install
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
-            #   : Use new infrastructure
-            # aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
-            aws s3 cp dist s3://udapeople-11ff95b --recursive
+            # FIXME: Use new infrastructure
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            # aws s3 cp dist s3://udapeople-11ff95b --recursive
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
@@ -309,12 +302,7 @@ jobs:
             # udapeople
             # - "76:63:36:fc:4b:ba:32:6e:a0:62:ea:b5:d2:4d:f0:49"
       - attach_workspace:
-          # necessary for inventory.txt
           at: ~/
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
       - run:
           name: Deploy backend
           command: |
@@ -338,18 +326,13 @@ jobs:
     docker:
       - image: gebbissimo/node_with_aws:20220806_v2
     steps:
-      # - checkout
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
-      # - run:
-      #     name: Get backend url
-      #     command: |
+      - checkout
+      - attach_workspace:
+          at: ~/
       - run:
           name: Backend smoke test.
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*].PublicIpAddress' --output text)
+            source .env
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
@@ -381,10 +364,6 @@ jobs:
       - image: gebbissimo/node_with_aws:20220806_v2
     steps:
       - checkout
-      # - run:
-      #     name: Install dependencies
-      #     command: |
-      #       # your code here
       - run:
           name: Update cloudfront distribution
           command: |
@@ -396,6 +375,8 @@ jobs:
             --parameter-overrides WorkflowID="udapeople-${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udapeople
       - destroy-environment:
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+      - revert-migrations:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 
   cleanup:
