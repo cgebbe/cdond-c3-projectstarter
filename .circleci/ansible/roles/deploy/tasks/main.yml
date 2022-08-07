@@ -20,6 +20,7 @@
 
 - name: "start pm2"
   ansible.builtin.shell: |
+    source /home/ubuntu/.profile
     cd ~/backend
     npm install
     pm2 stop default
