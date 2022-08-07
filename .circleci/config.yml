@@ -349,6 +349,8 @@ jobs:
       - run:
           name: Backend smoke test.
           command: |
+            # the test fails sometimes unexpectedly, I guess we're too early
+            sleep 10
             source .env
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
