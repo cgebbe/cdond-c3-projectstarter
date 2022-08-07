@@ -37,29 +37,29 @@ commands:
             fi
 
 jobs:
-  # notify:
-  #   docker:
-  #     - image: 'cimg/base:stable'
-  #   steps:
-  #     - slack/notify:
-  #         custom: |
-  #           {
-  #             "blocks": [
-  #               {
-  #                 "type": "section",
-  #                 "fields": [
-  #                   {
-  #                     "type": "plain_text",
-  #                     "text": "*This is a text notification*",
-  #                     "emoji": true
-  #                   }
-  #                 ]
-  #               }
-  #             ]
-  #           }
-  #         event: always
+  notify:
+    docker:
+      - image: "cimg/base:stable"
+    steps:
+      - slack/notify:
+          custom: |
+            {
+              "blocks": [
+                {
+                  "type": "section",
+                  "fields": [
+                    {
+                      "type": "plain_text",
+                      "text": "*This is a text notification*",
+                      "emoji": true
+                    }
+                  ]
+                }
+              ]
+            }
+          event: always
 
-  ### BUILD AND CHECK
+  ### BUILD
 
   build-frontend:
     docker:
@@ -95,75 +95,75 @@ jobs:
           paths: [backend/node_modules]
           key: backend-build
 
-  # test-frontend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-build]
-  #     - run:
-  #         name: test frontend
-  #         command: |
-  #           cd frontend
-  #           npm install
-  #           npm run test
+  test-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: test frontend
+          command: |
+            cd frontend
+            npm install
+            npm run test
 
-  # test-backend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-build]
-  #     - run:
-  #         name: test backend
-  #         command: |
-  #           cd backend
-  #           npm install
-  #           npm run test
+  test-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: test backend
+          command: |
+            cd backend
+            npm install
+            npm run test
 
-  # scan-frontend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [frontend-build]
-  #     - run:
-  #         name: test frontend
-  #         command: |
-  #           cd frontend
-  #           npm install
-  #           # we fake this...
-  #           npm audit fix --audit-level=critical --force
-  #           # npm install oauth-sign@^0.9.0
-  #           npm audit --audit-level=critical
+  scan-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run:
+          name: test frontend
+          command: |
+            cd frontend
+            npm install
+            # we fake this...
+            npm audit fix --audit-level=critical --force
+            # npm install oauth-sign@^0.9.0
+            npm audit --audit-level=critical
 
-  # scan-backend:
-  #   docker:
-  #     - image: circleci/node:13.8.0
-  #   steps:
-  #     - checkout
-  #     - restore_cache:
-  #         keys: [backend-build]
-  #     - run:
-  #         name: test backend
-  #         command: |
-  #           cd backend
-  #           npm install
-  #           # we fake this...
-  #           npm audit fix --audit-level=critical --force
-  #           npm audit fix --force
-  #           # npm audit --audit-level=critical
+  scan-backend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run:
+          name: test backend
+          command: |
+            cd backend
+            npm install
+            # we fake this...
+            npm audit fix --audit-level=critical --force
+            npm audit fix --force
+            # npm audit --audit-level=critical
 
-  #           # Note: I'm deactivating `npm audit` for the backend,
-  #           # since some issues don't have patches:
-  #           # - https://github.com/advisories/GHSA-fj58-h2fr-3pp2
-  #           # - https://github.com/advisories/GHSA-wm7h-9275-46v2
-  #           # see https://app.circleci.com/pipelines/github/cgebbe/cdond-c3-projectstarter/8/workflows/b4895dfd-6931-4ccb-a5b1-e7440434f248/jobs/29
+            # Note: I'm deactivating `npm audit` for the backend,
+            # since some issues don't have patches:
+            # - https://github.com/advisories/GHSA-fj58-h2fr-3pp2
+            # - https://github.com/advisories/GHSA-wm7h-9275-46v2
+            # see https://app.circleci.com/pipelines/github/cgebbe/cdond-c3-projectstarter/8/workflows/b4895dfd-6931-4ccb-a5b1-e7440434f248/jobs/29
 
-  ### DEPLOY INFRASTRUCTURE
+  ### CREATE INFRASTRUCTURE
 
   deploy-infrastructure:
     docker:
@@ -262,6 +262,8 @@ jobs:
             fi
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
+
+  ### DEPLOY
 
   deploy-frontend:
     docker:
@@ -399,7 +401,7 @@ jobs:
 
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
-              # OldWorkflowID=3fdeb61
+              # OldWorkflowID=f243a80
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
@@ -410,41 +412,6 @@ jobs:
       #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       # - revert-migrations:
       #     workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
-
-  # cleanup:
-  #   docker:
-  #     - image: gebbissimo/node_with_aws:20220806_v2
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Get old stack workflow id
-  #         command: |
-  #           # Fetch the Old workflow ID
-  #           # The cloudfront script exports this value
-  #           export OldWorkflowID=$(aws cloudformation \
-  #             list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-  #             --no-paginate --output text)
-  #           echo OldWorkflowID: "${OldWorkflowID}"
-  #           echo CIRCLE_WORKFLOW_ID: "${CIRCLE_WORKFLOW_ID:0:7}"
-
-  #           # Fetch the stack names
-  #           export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
-  #               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-  #           echo Stack names: "${STACKS[@]}"
-  #     - run:
-  #         name: Remove old stacks and files
-  #         command: |
-  #           # You can use any condition like:
-  #           # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
-  #           # if [[ "${OldWorkflowID}" =~ "${STACKS[@]}"  ]]
-  #           if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
-  #           then
-  #             aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
-  #             aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
-  #             aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
-  #           else
-  #             exit 0
-  #           fi
 
 workflows:
   default:
