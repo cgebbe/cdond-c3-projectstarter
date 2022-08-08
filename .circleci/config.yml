@@ -28,6 +28,7 @@ commands:
           command: |
             RESPONSE=$(aws dynamodb get-item --table-name key-value-store --key '{"key": {"S": "migration_<<parameters.workflow_id>>"}}' --attributes-to-get "value" --output="text")
             SUCCESS=${RESPONSE:6}
+            echo "SUCCESS=$SUCCESS"
 
             if (( $SUCCESS == 1 ));
             then
@@ -355,7 +356,7 @@ jobs:
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                exit 11
+                exit 0
             else
                 exit 1
             fi
@@ -427,7 +428,7 @@ jobs:
             # if [[ "${CIRCLE_WORKFLOW_ID:0:7}" =~ "${OldWorkflowID}" ]]
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
-              # OldWorkflowID=dbed676
+              # OldWorkflowID=e348778
               aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
               aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
               aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
@@ -451,7 +452,11 @@ workflows:
       # - scan-frontend:
       #     requires: [build-frontend]
 
-      - deploy-infrastructure
+      - deploy-infrastructure:
+          filters:
+            branches:
+              only:
+                - master
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:
