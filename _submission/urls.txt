@@ -1,4 +1,14 @@
-# Public Url to GitHub repository (not private) [URL01]
+# URL01: Public Url to GitHub repository (not private)
 https://github.com/cgebbe/cdond-c3-projectstarter
 
-# Public URL for your S3 Bucket (aka, your green candidate front-end) [URL02]
+# URL02: Public URL for your S3 Bucket (aka, your green candidate front-end)
+XXX
+
+# URL03: deployed and functioning front-end application in CloudFront.
+XXX
+
+# URL04: healthy backend application. The backend endpoint status should show a healthy response.
+XXX
+
+# URL05: Prometheus server showing UP state
+http://52.90.85.111:9090/targets
