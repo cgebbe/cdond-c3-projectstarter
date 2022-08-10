@@ -2,14 +2,14 @@
 https://github.com/cgebbe/cdond-c3-projectstarter
 
 # URL02: Public URL for your S3 Bucket (aka, your green candidate front-end)
-http://udapeople-0f1103d.s3-website-us-east-1.amazonaws.com/#/employees
+http://udapeople-d9cf567.s3-website-us-east-1.amazonaws.com/
 
 # URL03: deployed and functioning front-end application in CloudFront.
-https://d33p89m778wm4m.cloudfront.net/#/employees
+https://d33p89m778wm4m.cloudfront.net/
 
 # URL04: healthy backend application. The backend endpoint status should show a healthy response.
-curl http://ec2-44-201-231-91.compute-1.amazonaws.com:3030/api/status
+curl http://ec2-18-212-84-42.compute-1.amazonaws.com:3030/api/status
 {"status":"ok","version":"1.0.0","environment":"local"}%                                                         
 
 # URL05: Prometheus server showing UP state
-http://52.90.85.111:9090/targets
+http://ec2-3-84-157-50.compute-1.amazonaws.com:9090/targets
